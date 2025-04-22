@@ -1,4 +1,4 @@
-namespace Application.Shippers.Repositories;
+namespace Domain.Shipper.Repositories;
 
 public interface IShipperRepository
 {
