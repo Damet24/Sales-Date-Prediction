@@ -11,6 +11,7 @@ using Infrastructure.Customers.Repositories;
 using Infrastructure.Employee.Repositories;
 using Infrastructure.Repositories;
 using Infrastructure.Shipper.Repositories;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,7 +55,26 @@ builder.Services.AddSingleton<EmployeeFinder>();
 builder.Services.AddSingleton<OrderFinder>();
 builder.Services.AddSingleton<ShipperFinder>();
 
-// builder.Services.AddExceptionHandler<ProblemExceptionHandler>();
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var routeErrors = context.ModelState
+            .Where(e => e.Value?.Errors.Count > 0)
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray()
+            );
+
+        var customResponse = new
+        {
+            message = "Validation error in the data sent.",
+            errors = routeErrors
+        };
+
+        return new BadRequestObjectResult(customResponse);
+    };
+});
 
 var app = builder.Build();
 
