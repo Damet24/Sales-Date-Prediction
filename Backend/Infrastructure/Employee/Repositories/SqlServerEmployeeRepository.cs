@@ -30,7 +30,7 @@ public class SqlServerEmployeeRepository : IEmployeeRepository
             e.empid as Id,
             (e.titleofcourtesy + ' ' + e.firstname + ' ' + e.lastname) as FullName,
             e.phone as Phone
-            from StoreSample.HR.Employees e;"
+            from StoreSample.HR.Employees e where empid = 111;"
         );
     }
 }

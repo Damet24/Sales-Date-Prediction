@@ -13,9 +13,9 @@ public class SqlServerOrderRepository : IOrderRepository
         _client = client;
     }
 
-    public Order FindOrderByClientId(int clientId)
+    public List<Order> FindOrderByClientId(int clientId)
     {
-        return _client.ExecuteSingleQuery<Order>("select * from StoreSample.Sales.Orders where custid = @custId",
+        return _client.ExecuteQuery<Order>("select * from StoreSample.Sales.Orders where custid = @custId",
             new { custId = clientId });
     }
 }

@@ -18,9 +18,14 @@ public class SqlServerClient
         return result.ToList();
     }
     
-    public T ExecuteSingleQuery<T>(string query, object? param = null)
+    public T? ExecuteSingleQuery<T>(string query, object? param = null)
     {
         var result = _connection.Query<T>(query, param);
-        return result.ToList().First();
+        return result.ToList().FirstOrDefault();
+    }
+
+    public void ExecuteNonQuery(string query, object? param = null)
+    {
+        _connection.Execute(query, param);
     }
 }

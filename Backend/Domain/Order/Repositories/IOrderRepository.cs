@@ -2,5 +2,5 @@ namespace Domain.Order.Repositories;
 
 public interface IOrderRepository
 {
-    public Order FindOrderByClientId(int clientId);
+    public List<Order> FindOrderByClientId(int clientId);
 }

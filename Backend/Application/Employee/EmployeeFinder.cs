@@ -1,4 +1,5 @@
-using EmployeeEntity  = Domain.Employee.Employee;
+using Domain;
+using EmployeeEntity = Domain.Employee.Employee;
 using Domain.Employee.Repositories;
 
 namespace Application.Employee;
@@ -12,8 +13,6 @@ public class EmployeeFinder
         _repository = repository;
     }
 
-    public List<EmployeeEntity> GetEmployeeWhitOrderDates()
-    {
-        return _repository.GetAllEmployees();
-    }
+    public Result<List<EmployeeEntity>> GetEmployeeWhitOrderDates() =>
+        Result<List<EmployeeEntity>>.Success(_repository.GetAllEmployees());
 }

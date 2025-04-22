@@ -1,4 +1,5 @@
 using Application.Employee;
+using Backend.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
@@ -16,8 +17,6 @@ public class EmployeesController : ControllerBase
     
     
     [HttpGet]
-    public IActionResult Get()
-    {
-        return Ok(_employeeFinder.GetEmployeeWhitOrderDates());
-    }
+    public IActionResult Get() => _employeeFinder.GetEmployeeWhitOrderDates().ToActionResult();
+    
 }

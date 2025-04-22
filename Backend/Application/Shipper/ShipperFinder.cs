@@ -1,3 +1,4 @@
+using Domain;
 using Domain.Shipper.Repositories;
 using ShipperEntity = Domain.Shipper.Shipper;
 
@@ -11,9 +12,7 @@ public class ShipperFinder
     {
         _shipperRepository = shipperRepository;
     }
-    
-    public List<ShipperEntity> GetAllShippers()
-    {
-        return _shipperRepository.GetAllShippers();
-    }
+
+    public Result<List<ShipperEntity>> GetAllShippers() =>
+        Result<List<ShipperEntity>>.Success(_shipperRepository.GetAllShippers());
 }
