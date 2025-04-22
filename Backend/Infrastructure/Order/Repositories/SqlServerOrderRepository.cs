@@ -17,7 +17,7 @@ public class SqlServerOrderRepository : IOrderRepository
     {
         return _client.ExecuteQuery<Order>(@"
 			select 
-				o.orderid as OrderId,
+				o.orderid as Id,
 				o.custid as CustomerId,
 				o.orderdate as OrderDate,
 				o.requireddate as RequiredDate,
