@@ -18,6 +18,6 @@ public class OrdersController : ControllerBase
         _orderFinder = orderFinder;
     }
 
-    [HttpGet("{orderId}")]
-    public IActionResult Get(int orderId) => _orderFinder.FindOrderByClient(orderId).ToActionResult();
+    [HttpGet("{customerId}")]
+    public IActionResult Get(int customerId) => _orderFinder.FindOrderByClient(customerId).ToActionResult();
 }
