@@ -1,15 +1,20 @@
 using Application.Customer;
 using Application.Employee;
 using Application.Orders;
+using Application.Product;
 using Application.Shipper;
+using Domain;
 using Domain.Customer.Repositories;
 using Domain.Employee.Repositories;
 using Domain.Order.Repositories;
+using Domain.Product.Repositories;
 using Domain.Shipper.Repositories;
+using Infrastructure;
 using Infrastructure.Clients;
 using Infrastructure.Customers.Repositories;
 using Infrastructure.Employee.Repositories;
-using Infrastructure.Repositories;
+using Infrastructure.Order.Repositories;
+using Infrastructure.Products;
 using Infrastructure.Shipper.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -45,15 +50,19 @@ builder.Services.AddSingleton<SqlServerClient>(provider =>
     var connection = new SqlConnection(connectionBuilder.ConnectionString);
     return new SqlServerClient(connection);
 });
+
 builder.Services.AddSingleton<ICustomerRepository, SqlServerCustomerRepository>();
 builder.Services.AddSingleton<IEmployeeRepository, SqlServerEmployeeRepository>();
 builder.Services.AddSingleton<IOrderRepository, SqlServerOrderRepository>();
 builder.Services.AddSingleton<IShipperRepository, SqlServerShipperRepository>();
+builder.Services.AddSingleton<IProductRepository, SqlServerProductRepository>();
 
 builder.Services.AddSingleton<CustomerFinder>();
 builder.Services.AddSingleton<EmployeeFinder>();
 builder.Services.AddSingleton<OrderFinder>();
 builder.Services.AddSingleton<ShipperFinder>();
+builder.Services.AddSingleton<ProductFinder>();
+builder.Services.AddSingleton<OrderCreator>();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {

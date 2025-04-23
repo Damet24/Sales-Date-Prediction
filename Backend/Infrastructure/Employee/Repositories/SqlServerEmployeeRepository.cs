@@ -16,21 +16,19 @@ public class SqlServerEmployeeRepository : IEmployeeRepository
     public EmployeeEntity GetEmployee(int id)
     {
         return _client.ExecuteSingleQuery<EmployeeEntity>(@"
-            select
-            empid as Id,
-            (titleofcourtesy + ' ' + firstname + ' ' + lastname) as FullName,
-            phone as Phone
-            from StoreSample.HR.Employees where Id = @id", new { id });
+            SELECT
+            empid AS Id,
+            (titleofcourtesy + ' ' + firstname + ' ' + lastname) AS FullName
+            FROM StoreSample.HR.Employees WHERE Id = @id", new { id });
     }
 
     public List<EmployeeEntity> GetAllEmployees()
     {
         return _client.ExecuteQuery<EmployeeEntity>(@"
-            select  
-            e.empid as Id,
-            (e.titleofcourtesy + ' ' + e.firstname + ' ' + e.lastname) as FullName,
-            e.phone as Phone
-            from StoreSample.HR.Employees e;"
+            SELECT  
+            e.empid AS Id,
+            (e.titleofcourtesy + ' ' + e.firstname + ' ' + e.lastname) AS FullName
+            FROM StoreSample.HR.Employees e;"
         );
     }
 }

@@ -40,11 +40,10 @@ public class SqlServerCustomerRepository : ICustomerRepository
                 FROM StoreSample.Sales.Orders 
                 GROUP BY custid 
             )
-            SELECT 
-                c.custid as Id,
+            SELECT
                 c.contactname as CustomerName,
                 lo.last_date as LastOrderDate,
-                DATEADD(DAY, p.average_day, lo.last_date) as EstimatedOrderDate
+                DATEADD(DAY, p.average_day, lo.last_date) as NextPredictedOrder
             FROM StoreSample.Sales.Customers c
             JOIN last_orders lo ON c.custid = lo.custid
             JOIN averages p ON c.custid = p.custid

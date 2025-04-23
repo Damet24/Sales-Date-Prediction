@@ -16,7 +16,7 @@ public class SqlServerShipperRepository : IShipperRepository
     public List<ShipperEntity> GetAllShippers()
     {
         return _client.ExecuteQuery<ShipperEntity>(@"
-                SELECT shipperid as Id, companyname as CompanyName, phone as Phone
+                SELECT shipperid as Id, companyname as CompanyName
                 FROM StoreSample.Sales.Shippers;"
             );
     }

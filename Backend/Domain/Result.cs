@@ -18,6 +18,6 @@ public class Result<T>
         IsSuccess = false;
     }
 
-    public static Result<T> Success(T value) => new Result<T>(value);
-    public static Result<T> Failure(string error) => new Result<T>(error);
+    public static Result<T> Success(T value) => new (value);
+    public static Result<T> Failure(string error) => new (error);
 }

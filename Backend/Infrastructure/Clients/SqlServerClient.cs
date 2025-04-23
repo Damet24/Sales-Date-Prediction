@@ -5,27 +5,50 @@ namespace Infrastructure.Clients;
 
 public class SqlServerClient
 {
-    private readonly SqlConnection _connection;
+    public readonly SqlConnection Connection;
+    public SqlTransaction? Transaction;
 
     public SqlServerClient(SqlConnection connection)
     {
-        _connection = connection;
+        Connection = connection;
+    }
+
+    public void BeginTransaction()
+    {
+        if (Connection.State != System.Data.ConnectionState.Open)
+            Connection.Open();
+
+        Transaction = Connection.BeginTransaction();
+    }
+
+    public void Commit()
+    {
+        Transaction?.Commit();
+        Transaction = null;
+        Connection.Close();
+    }
+
+    public void Rollback()
+    {
+        Transaction?.Rollback();
+        Transaction = null;
+        Connection.Close();
     }
 
     public List<T> ExecuteQuery<T>(string query, object? param = null)
     {
-        var result = _connection.Query<T>(query, param);
+        var result = Connection.Query<T>(query, param, Transaction);
         return result.ToList();
     }
-    
+
     public T? ExecuteSingleQuery<T>(string query, object? param = null)
     {
-        var result = _connection.Query<T>(query, param);
-        return result.ToList().FirstOrDefault();
+        var result = Connection.Query<T>(query, param, Transaction);
+        return result.FirstOrDefault();
     }
 
     public void ExecuteNonQuery(string query, object? param = null)
     {
-        _connection.Execute(query, param);
+        Connection.Execute(query, param, Transaction);
     }
 }
