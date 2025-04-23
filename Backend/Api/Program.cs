@@ -18,6 +18,7 @@ using Infrastructure.Products;
 using Infrastructure.Shipper.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,6 +65,11 @@ builder.Services.AddSingleton<ShipperFinder>();
 builder.Services.AddSingleton<ProductFinder>();
 builder.Services.AddSingleton<OrderCreator>();
 
+Log.Logger = new LoggerConfiguration().CreateLogger();
+
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
+
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.InvalidModelStateResponseFactory = context =>
@@ -92,8 +98,7 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
 app.UseHttpsRedirection();
 app.MapControllers();
 app.Run();
-
-

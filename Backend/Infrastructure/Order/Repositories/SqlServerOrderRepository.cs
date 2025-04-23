@@ -12,11 +12,13 @@ namespace Infrastructure.Order.Repositories;
 
 public class SqlServerOrderRepository : IOrderRepository
 {
+    private readonly ILogger<SqlServerOrderRepository> _logger;
     private readonly SqlServerClient _client;
 
-    public SqlServerOrderRepository(SqlServerClient client)
+    public SqlServerOrderRepository(SqlServerClient client, ILogger<SqlServerOrderRepository> logger)
     {
         _client = client;
+        _logger = logger;
     }
 
     public List<Domain.Order.Order> FindOrderByClientId(int customerId)
@@ -44,15 +46,22 @@ public class SqlServerOrderRepository : IOrderRepository
             _client.Commit();
             return Result<string>.Success("Created");
         }
-        catch (SqlException ex)
+        catch (SqlException sqlException)
         {
-            Console.WriteLine(ex);
+            _logger.LogError($"{sqlException.Message}\n{sqlException.StackTrace}");
             _client.Rollback();
-            return Result<string>.Failure(ex.Message);
+
+            return sqlException.Number switch
+            {
+                DatabaseErrors.ViolationOfConstraint or DatabaseErrors.ConflictedWithTheConstraint
+                    or DatabaseErrors.CannotInsertDuplicateKeyRow => Result<string>.Failure(
+                        "Database error in data validation"),
+                _ => throw new Exception(sqlException.Message, sqlException)
+            };
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            Console.WriteLine(e);
+            _logger.LogError($"{exception.Message}\n{exception.StackTrace}");
             _client.Rollback();
             throw;
         }
@@ -123,12 +132,12 @@ public class SqlServerOrderRepository : IOrderRepository
             Discount = item.Discount,
         });
     }
-    
+
     private DataTable ConvertToDataTable(List<OrderDetail> details)
     {
         var table = new DataTable();
         table.TableName = "StoreSample.Sales.OrderDetails";
-    
+
         table.Columns.Add("OrderId", typeof(int));
         table.Columns.Add("ProductId", typeof(int));
         table.Columns.Add("UnitPrice", typeof(decimal));
