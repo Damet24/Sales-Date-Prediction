@@ -12,25 +12,25 @@ public class CreateOrderRequest
     [Required]
     public int ShipperId { get; set; }
     [Required]
-    public string ShipperName { get; set; }
+    public string ShipName { get; set; }
     [Required]
-    public string ShipperAddress { get; set; }
+    public string ShipAddress { get; set; }
     [Required]
-    public string ShipperCity { get; set; }
+    public string ShipCity { get; set; }
     [Required]
     public DateTime OrderDate { get; set; }
     [Required]
     public DateTime RequiredDate { get; set; }
     [Required]
-    public string ShipperRegion { get; set; }
+    public string ShipRegion { get; set; }
     [Required]
-    public string ShipperPostalCode { get; set; }
+    public string ShipPostalCode { get; set; }
     [Required]
     public DateTime ShippedDate { get; set; }
     [Required]
     public double Freight { get; set; }
     [Required]
-    public string ShipperCountry { get; set; }
+    public string ShipCountry { get; set; }
     
     public List<OrderDetailRequest> OrderDetails { get; set; }
 
@@ -41,16 +41,16 @@ public class CreateOrderRequest
             CustomerId = request.CustomerId,
             EmployeeId = request.EmployeeId,
             ShipperId = request.ShipperId,
-            ShipperName = request.ShipperName,
-            ShipperAddress = request.ShipperAddress,
-            ShipperCity = request.ShipperCity,
+            ShipName = request.ShipName,
+            ShipAddress = request.ShipAddress,
+            ShipCity = request.ShipCity,
             OrderDate = request.OrderDate,
             RequiredDate = request.RequiredDate,
             ShippedDate = request.ShippedDate,
             Freight = request.Freight,
-            ShipperCountry = request.ShipperCountry,
-            ShipperRegion = request.ShipperRegion,
-            ShipperPostalCode = request.ShipperPostalCode,
+            ShipCountry = request.ShipCountry,
+            ShipRegion = request.ShipRegion,
+            ShipPostalCode = request.ShipPostalCode,
             OrderDetails = request.OrderDetails.Select(item => new OrderDetail
             {
                 OrderId = 0,

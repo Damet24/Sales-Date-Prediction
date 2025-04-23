@@ -115,12 +115,12 @@ public class SqlServerOrderRepository : IOrderRepository
             order.ShippedDate,
             order.ShipperId,
             order.Freight,
-            ShipName = order.ShipperName,
-            ShipAddress = order.ShipperAddress,
-            ShipCity = order.ShipperCity,
-            ShipRegion = order.ShipperRegion,
-            ShipPostalCode = order.ShipperPostalCode,
-            ShipCountry = order.ShipperCountry
+            ShipName = order.ShipName,
+            ShipAddress = order.ShipAddress,
+            ShipCity = order.ShipCity,
+            ShipRegion = order.ShipRegion,
+            ShipPostalCode = order.ShipPostalCode,
+            ShipCountry = order.ShipCountry
         });
 
         return order.OrderDetails.Select(item => new OrderDetail

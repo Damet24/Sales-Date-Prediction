@@ -1,6 +1,6 @@
 using Application.Orders;
 using Domain;
-using EmployeeEntity = Domain.Employee.Employee;
+using Domain.Employee;
 using Domain.Employee.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -17,6 +17,6 @@ public class EmployeeFinder
         _logger = logger;
     }
 
-    public Result<List<EmployeeEntity>> GetEmployeeWhitOrderDates() =>
-        Result<List<EmployeeEntity>>.Success(_repository.GetAllEmployees());
+    public Result<List<Domain.Employee.Employee>> GetEmployeeWhitOrderDates() =>
+        Result<List<Domain.Employee.Employee>>.Success(_repository.GetAllEmployees());
 }

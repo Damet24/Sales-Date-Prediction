@@ -1,5 +1,5 @@
+using Domain.Employee;
 using Domain.Employee.Repositories;
-using EmployeeEntity = Domain.Employee.Employee;
 using Infrastructure.Clients;
 
 namespace Infrastructure.Employee.Repositories;
@@ -13,18 +13,18 @@ public class SqlServerEmployeeRepository : IEmployeeRepository
         _client = client;
     }
     
-    public EmployeeEntity GetEmployee(int id)
+    public Domain.Employee.Employee GetEmployee(int id)
     {
-        return _client.ExecuteSingleQuery<EmployeeEntity>(@"
+        return _client.ExecuteSingleQuery<Domain.Employee.Employee>(@"
             SELECT
             empid AS Id,
             (titleofcourtesy + ' ' + firstname + ' ' + lastname) AS FullName
             FROM StoreSample.HR.Employees WHERE Id = @id", new { id });
     }
 
-    public List<EmployeeEntity> GetAllEmployees()
+    public List<Domain.Employee.Employee> GetAllEmployees()
     {
-        return _client.ExecuteQuery<EmployeeEntity>(@"
+        return _client.ExecuteQuery<Domain.Employee.Employee>(@"
             SELECT  
             e.empid AS Id,
             (e.titleofcourtesy + ' ' + e.firstname + ' ' + e.lastname) AS FullName
