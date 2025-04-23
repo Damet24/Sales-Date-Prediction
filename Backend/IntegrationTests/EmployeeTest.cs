@@ -1,11 +1,10 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using System.Security.Cryptography;
 using Domain.Employee;
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Tests;
-
-using Microsoft.AspNetCore.Mvc.Testing;
 
 public class EmployeeTest : IClassFixture<WebApplicationFactory<Program>>
 {
@@ -28,10 +27,10 @@ public class EmployeeTest : IClassFixture<WebApplicationFactory<Program>>
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var employees = await response.Content.ReadFromJsonAsync<List<Employee>>();
         Assert.NotNull(employees);
-        Assert.All(employees, e =>
+        Assert.All(employees, employee =>
         {
-            Assert.False(string.IsNullOrEmpty(e.FullName));
-            Assert.True(e.Id > 0);
+            employee.FullName.Should().NotBeEmpty();
+            employee.Id.Should().BeGreaterThan(0);
         });
     }
 }

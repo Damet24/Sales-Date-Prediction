@@ -41,10 +41,10 @@ public class SqlServerOrderRepository : IOrderRepository
         _client.BeginTransaction();
         try
         {
-            var details = CreateOrder(order);
+            var (details, orderId) = CreateOrder(order);
             CreateOrderDetails(details.ToList());
             _client.Commit();
-            return Result<string>.Success("Created");
+            return Result<string>.Success(orderId + "");
         }
         catch (SqlException sqlException)
         {
@@ -56,14 +56,14 @@ public class SqlServerOrderRepository : IOrderRepository
                 DatabaseErrors.ViolationOfConstraint or DatabaseErrors.ConflictedWithTheConstraint
                     or DatabaseErrors.CannotInsertDuplicateKeyRow => Result<string>.Failure(
                         "Database error in data validation"),
-                _ => throw new Exception(sqlException.Message, sqlException)
+                _ => Result<string>.Failure(sqlException.Message)
             };
         }
         catch (Exception exception)
         {
             _logger.LogError($"{exception.Message}\n{exception.StackTrace}");
             _client.Rollback();
-            throw;
+            return Result<string>.Failure(exception.Message);
         }
     }
 
@@ -80,7 +80,7 @@ public class SqlServerOrderRepository : IOrderRepository
         bulkCopy.WriteToServer(table);
     }
 
-    private IEnumerable<OrderDetail> CreateOrder(OrderWithDetails order)
+    private (IEnumerable<OrderDetail>, int orderId) CreateOrder(OrderWithDetails order)
     {
         var sql = @"
         INSERT INTO StoreSample.Sales.Orders
@@ -123,14 +123,14 @@ public class SqlServerOrderRepository : IOrderRepository
             ShipCountry = order.ShipCountry
         });
 
-        return order.OrderDetails.Select(item => new OrderDetail
+        return (order.OrderDetails.Select(item => new OrderDetail
         {
             OrderId = orderId,
             ProductId = item.ProductId,
             Quantity = item.Quantity,
             UnitPrice = item.UnitPrice,
             Discount = item.Discount,
-        });
+        }), orderId);
     }
 
     private DataTable ConvertToDataTable(List<OrderDetail> details)

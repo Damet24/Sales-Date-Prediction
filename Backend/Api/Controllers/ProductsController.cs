@@ -8,11 +8,11 @@ namespace Backend.Controllers;
 [ApiController]
 [Route("[controller]")]
 [TypeFilter(typeof(ExceptionFilter))]
-public class ProductController
+public class ProductsController
 {
     private readonly ProductFinder _productFinder;
 
-    public ProductController(ProductFinder productFinder)
+    public ProductsController(ProductFinder productFinder)
     {
         _productFinder = productFinder;
     }
