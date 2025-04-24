@@ -9,19 +9,6 @@ Este proyecto utiliza **.NET 9** y **SQL Server** como base de datos.
 
 Puedes usar SQL Server localmente o en un contenedor Docker.
 
-## Estructura del Backend
-```
-- `Backend/`
-  - `Api/`
-    - `Controllers/`
-      - [`CustomersController.cs`](Backend/Api/Controllers/CustomersController.cs)
-      - [`OrdersController.cs`](Backend/Api/Controllers/OrdersController.cs)
-    - [`Program.cs`](Backend/Api/Program.cs)
-  - `Application/`
-    - `Orders/`
-      - [`OrderCreator.cs`](Backend/Application/Orders/OrderCreator.cs)
-  - `Infrastructure/`
-    - [`SqlServerClient.cs`](Backend/Infrastructure/Clients/SqlServerClient.cs)
 ## Configuración
 
 ### Archivo de configuración
