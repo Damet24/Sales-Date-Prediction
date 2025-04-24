@@ -21,9 +21,7 @@ public class CreateOrderRequest
     public DateTime OrderDate { get; set; }
     [Required]
     public DateTime RequiredDate { get; set; }
-    [Required]
     public string ShipRegion { get; set; }
-    [Required]
     public string ShipPostalCode { get; set; }
     [Required]
     public DateTime ShippedDate { get; set; }

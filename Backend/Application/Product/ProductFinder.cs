@@ -18,8 +18,5 @@ public class ProductFinder
     }
 
 
-    public Result<List<ProductEntity>> GetProducts()
-    {
-        return Result<List<ProductEntity>>.Success(_repository.GetProducts());
-    }
+    public Result<List<ProductEntity>> GetProducts() => Result<List<ProductEntity>>.Success(_repository.GetProducts());
 }

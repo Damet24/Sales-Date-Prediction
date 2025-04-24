@@ -23,22 +23,25 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddApplicationDependencies(this IServiceCollection services,
         IConfiguration configuration)
     {
-        var database = configuration.GetSection("Database");
-        var connectionBuilder = new SqlConnectionStringBuilder
+        services.AddSingleton<SqlServerClient>(provider =>
         {
-            /*
-             * Aquí se está tomando la configuración del archivo appsettings.[environment].json
-             * por practicidad para esta prueba, pero en un entorno productivo se debe obtener la configuración
-             * desde un entorno seguro o un servicio de credenciales como Parameter Store (AWS).
-             */
-            DataSource = database.GetValue<string>("DataSource"),
-            UserID = database.GetValue<string>("UserID"),
-            Password = database.GetValue<string>("Password"),
-            IntegratedSecurity = database.GetValue<bool>("IntegratedSecurity"),
-            Encrypt = database.GetValue<bool>("Encrypt")
-        };
-        var connection = new SqlConnection(connectionBuilder.ConnectionString);
-        services.AddSingleton(new SqlServerClient(connection));
+            var database = configuration.GetSection("Database");
+            var connectionBuilder = new SqlConnectionStringBuilder
+            {
+                /*
+                 * Aquí se está tomando la configuración del archivo appsettings.[environment].json
+                 * por practicidad para esta prueba, pero en un entorno productivo se debe obtener la configuración
+                 * desde un entorno seguro o un servicio de credenciales como Parameter Store (AWS).
+                 */
+                DataSource = database.GetValue<string>("DataSource"),
+                UserID = database.GetValue<string>("UserID"),
+                Password = database.GetValue<string>("Password"),
+                IntegratedSecurity = database.GetValue<bool>("IntegratedSecurity"),
+                Encrypt = database.GetValue<bool>("Encrypt")
+            };
+
+            return new SqlServerClient(connectionBuilder.ConnectionString);
+        });
 
         // Repositories
         services.AddSingleton<ICustomerRepository, SqlServerCustomerRepository>();
@@ -54,6 +57,7 @@ public static class DependencyInjectionExtensions
         services.AddSingleton<ShipperFinder>();
         services.AddSingleton<ProductFinder>();
         services.AddSingleton<OrderCreator>();
+        services.AddSingleton<OrderOfCustomerFinder>();
 
         return services;
     }

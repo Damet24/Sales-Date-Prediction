@@ -50,4 +50,10 @@ public class SqlServerCustomerRepository : ICustomerRepository
             JOIN averages p ON c.custid = p.custid
         ");
     }
+
+    public Customer? FindById(int customerId)
+    {
+        return _client.ExecuteSingleQuery<Customer>(
+            "select companyname as Name from StoreSample.Sales.Customers where custid = @customerId", new { customerId });
+    }
 }

@@ -19,7 +19,7 @@ public class OrderFinder
 
     public Result<List<Order>> FindOrderByClient(int customerId)
     {
-        var r = _repository.FindOrderByClientId(customerId);
-        return r.Count > 0 ? Result<List<Order>>.Success(r) : Result<List<Order>>.Failure("Client not found");
+        var result = _repository.FindOrderByCustomerId(customerId);
+        return result.Count > 0 ? Result<List<Order>>.Success(result) : Result<List<Order>>.Failure("Client not found");
     }
 }

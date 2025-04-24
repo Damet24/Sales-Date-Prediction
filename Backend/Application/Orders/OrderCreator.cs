@@ -1,4 +1,5 @@
 using Domain;
+using Domain.Constants;
 using Domain.Order;
 using Domain.Order.Repositories;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,13 @@ public class OrderCreator
 
     public Result<string> Create(OrderWithDetails order)
     {
-        return _orderRepository.Create(order);
+        /*
+         * Se valida que el usuario solo agregue un producto por orden.
+         * Sin embargo, la lógica para agregar múltiples productos ya está implementada
+         * en caso de que se necesite en el futuro.
+         */
+        return order.OrderDetails.Count > OrderConstants.MaxProductPerOrder
+            ? Result<string>.Failure("Only one product can be added per order")
+            : _orderRepository.Create(order);
     }
 }

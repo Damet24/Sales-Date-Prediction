@@ -1,9 +1,11 @@
+using Application.Customer;
 using Application.Employee;
 using Application.Orders;
 using Backend.Extensions;
 using Backend.Filters;
 using Domain;
 using Domain.Order;
+using Infrastructure.Customers.Response;
 using Infrastructure.Order.Request;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,17 +16,27 @@ namespace Backend.Controllers;
 [TypeFilter(typeof(ExceptionFilter))]
 public class OrdersController : ControllerBase
 {
-    private readonly OrderFinder _orderFinder;
     private readonly OrderCreator _orderCreator;
+    private readonly OrderOfCustomerFinder _orderOfCustomerFinder;
 
-    public OrdersController(OrderFinder orderFinder, OrderCreator orderCreator)
+    public OrdersController(OrderFinder orderFinder, OrderCreator orderCreator, CustomerFinder customerFinder, OrderOfCustomerFinder orderOfCustomerFinder)
     {
-        _orderFinder = orderFinder;
         _orderCreator = orderCreator;
+        _orderOfCustomerFinder = orderOfCustomerFinder;
     }
 
     [HttpGet("{customerId}")]
-    public IActionResult Get(int customerId) => _orderFinder.FindOrderByClient(customerId).ToActionResult();
+    public IActionResult Get(int customerId)
+    {
+        var result = _orderOfCustomerFinder.Find(customerId);
+        if (!result.IsSuccess) return result.ToActionResult();
+        var (customerName, orders) = result.Value;
+        return Ok(new CustomerOrdersResponse
+        {
+            CustomerName = customerName,
+            Orders = orders
+        });
+    }
 
     [HttpPost]
     public IActionResult Post([FromBody] CreateOrderRequest request) =>

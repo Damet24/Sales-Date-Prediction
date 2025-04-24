@@ -1,12 +1,11 @@
 using System.Data;
+using Dapper;
 using Domain;
 using Domain.Order;
 using Domain.Order.Repositories;
 using Infrastructure.Clients;
-using Infrastructure.Order.Request;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
-using Microsoft.Identity.Client.Extensibility;
 
 namespace Infrastructure.Order.Repositories;
 
@@ -21,7 +20,7 @@ public class SqlServerOrderRepository : IOrderRepository
         _logger = logger;
     }
 
-    public List<Domain.Order.Order> FindOrderByClientId(int customerId)
+    public List<Domain.Order.Order> FindOrderByCustomerId(int customerId)
     {
         return _client.ExecuteQuery<Domain.Order.Order>(@"
 			SELECT 
@@ -37,101 +36,86 @@ public class SqlServerOrderRepository : IOrderRepository
     }
 
     public Result<string> Create(OrderWithDetails order)
-    {
-        _client.BeginTransaction();
-        try
-        {
-            var (details, orderId) = CreateOrder(order);
-            CreateOrderDetails(details.ToList());
-            _client.Commit();
-            return Result<string>.Success(orderId + "");
-        }
-        catch (SqlException sqlException)
-        {
-            _logger.LogError($"{sqlException.Message}\n{sqlException.StackTrace}");
-            _client.Rollback();
+{
+    using var connection = _client.CreateConnection();
+    connection.Open();
+    using var transaction = connection.BeginTransaction();
 
-            return sqlException.Number switch
-            {
-                DatabaseErrors.ViolationOfConstraint or DatabaseErrors.ConflictedWithTheConstraint
-                    or DatabaseErrors.CannotInsertDuplicateKeyRow => Result<string>.Failure(
-                        "Database error in data validation"),
-                _ => Result<string>.Failure(sqlException.Message)
-            };
-        }
-        catch (Exception exception)
-        {
-            _logger.LogError($"{exception.Message}\n{exception.StackTrace}");
-            _client.Rollback();
-            return Result<string>.Failure(exception.Message);
-        }
+    try
+    {
+        var (details, orderId) = CreateOrder(order, connection, transaction);
+        CreateOrderDetails(details.ToList(), connection, transaction);
+
+        transaction.Commit();
+        return Result<string>.Success(orderId.ToString());
     }
-
-    private void CreateOrderDetails(List<OrderDetail> details)
+    catch (Exception exception)
     {
-        var table = ConvertToDataTable(details);
-        using var bulkCopy = new SqlBulkCopy(_client.Connection, SqlBulkCopyOptions.Default, _client.Transaction);
-        bulkCopy.DestinationTableName = table.TableName;
-        bulkCopy.ColumnMappings.Add("OrderId", "orderid");
-        bulkCopy.ColumnMappings.Add("ProductId", "productid");
-        bulkCopy.ColumnMappings.Add("UnitPrice", "unitprice");
-        bulkCopy.ColumnMappings.Add("Quantity", "qty");
-        bulkCopy.ColumnMappings.Add("Discount", "discount");
-        bulkCopy.WriteToServer(table);
+        _logger.LogError($"{exception.Message}\n{exception.StackTrace}");
+        transaction.Rollback();
+        return Result<string>.Failure(exception.Message);
     }
+}
 
-    private (IEnumerable<OrderDetail>, int orderId) CreateOrder(OrderWithDetails order)
+private void CreateOrderDetails(List<OrderDetail> details, SqlConnection connection, SqlTransaction transaction)
+{
+    var table = ConvertToDataTable(details);
+
+    using var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.Default, transaction)
     {
-        var sql = @"
+        DestinationTableName = "[StoreSample].[Sales].[OrderDetails]"
+    };
+
+    bulkCopy.ColumnMappings.Add("OrderId", "orderid");
+    bulkCopy.ColumnMappings.Add("ProductId", "productid");
+    bulkCopy.ColumnMappings.Add("UnitPrice", "unitprice");
+    bulkCopy.ColumnMappings.Add("Quantity", "qty");
+    bulkCopy.ColumnMappings.Add("Discount", "discount");
+
+    bulkCopy.WriteToServer(table);
+}
+
+private (IEnumerable<OrderDetail>, int orderId) CreateOrder(OrderWithDetails order, SqlConnection connection, SqlTransaction transaction)
+{
+    const string sql = @"
         INSERT INTO StoreSample.Sales.Orders
             (
-                custid,empid,orderdate,requireddate,shippeddate,shipperid,freight,shipname,shipaddress,shipcity,
-                shipregion,shippostalcode,shipcountry
+                custid, empid, orderdate, requireddate, shippeddate, shipperid, freight,
+                shipname, shipaddress, shipcity, shipregion, shippostalcode, shipcountry
             )
-            VALUES
+        VALUES
             (
-                @CustId,
-                @EmpId,
-                @OrderDate,
-                @RequiredDate,
-                @ShippedDate,
-                @ShipperId,
-                @Freight,
-                @ShipName,
-                @ShipAddress,
-                @ShipCity,
-                @ShipRegion,
-                @ShipPostalCode,
-                @ShipCountry
+                @CustId, @EmpId, @OrderDate, @RequiredDate, @ShippedDate, @ShipperId, @Freight,
+                @ShipName, @ShipAddress, @ShipCity, @ShipRegion, @ShipPostalCode, @ShipCountry
             );
-           SELECT CAST(SCOPE_IDENTITY() AS int);";
+        SELECT CAST(SCOPE_IDENTITY() AS int);";
 
-        var orderId = _client.ExecuteSingleQuery<int>(sql, new
-        {
-            CustId = order.CustomerId,
-            EmpId = order.EmployeeId,
-            order.OrderDate,
-            order.RequiredDate,
-            order.ShippedDate,
-            order.ShipperId,
-            order.Freight,
-            ShipName = order.ShipName,
-            ShipAddress = order.ShipAddress,
-            ShipCity = order.ShipCity,
-            ShipRegion = order.ShipRegion,
-            ShipPostalCode = order.ShipPostalCode,
-            ShipCountry = order.ShipCountry
-        });
+    var orderId = connection.QuerySingle<int>(sql, new
+    {
+        CustId = order.CustomerId,
+        EmpId = order.EmployeeId,
+        order.OrderDate,
+        order.RequiredDate,
+        order.ShippedDate,
+        order.ShipperId,
+        order.Freight,
+        order.ShipName,
+        order.ShipAddress,
+        order.ShipCity,
+        order.ShipRegion,
+        order.ShipPostalCode,
+        order.ShipCountry
+    }, transaction);
 
-        return (order.OrderDetails.Select(item => new OrderDetail
-        {
-            OrderId = orderId,
-            ProductId = item.ProductId,
-            Quantity = item.Quantity,
-            UnitPrice = item.UnitPrice,
-            Discount = item.Discount,
-        }), orderId);
-    }
+    return (order.OrderDetails.Select(item => new OrderDetail
+    {
+        OrderId = orderId,
+        ProductId = item.ProductId,
+        Quantity = item.Quantity,
+        UnitPrice = item.UnitPrice,
+        Discount = item.Discount
+    }), orderId);
+}
 
     private DataTable ConvertToDataTable(List<OrderDetail> details)
     {

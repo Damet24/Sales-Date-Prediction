@@ -19,4 +19,11 @@ public class CustomerFinder
 
     public Result<List<CustomerWithOrderDate>> GetCustomersWithOrderDate() =>
         Result<List<CustomerWithOrderDate>>.Success(_repository.GetCustomersWithOrderDate());
+
+    public Result<CustomerEntity> GetCustomer(int customerId)
+    {
+        var customer = _repository.FindById(customerId);
+        if (customer == null) return Result<CustomerEntity>.Failure("Customer not found");
+        return Result<CustomerEntity>.Success(customer);
+    }
 }

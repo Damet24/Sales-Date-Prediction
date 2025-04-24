@@ -20,4 +20,9 @@ public class Result<T>
 
     public static Result<T> Success(T value) => new (value);
     public static Result<T> Failure(string error) => new (error);
+
+    public void Deconstruct(out object customername, out object orders)
+    {
+        throw new NotImplementedException();
+    }
 }

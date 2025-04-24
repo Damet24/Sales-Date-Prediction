@@ -1,54 +1,40 @@
-using Microsoft.Data.SqlClient;
 using Dapper;
+using Microsoft.Data.SqlClient;
 
 namespace Infrastructure.Clients;
 
 public class SqlServerClient
 {
-    public readonly SqlConnection Connection;
-    public SqlTransaction? Transaction;
+    private readonly string _connectionString;
 
-    public SqlServerClient(SqlConnection connection)
+    public SqlServerClient(string connectionString)
     {
-        Connection = connection;
+        _connectionString = connectionString;
     }
 
-    public void BeginTransaction()
+    public SqlConnection CreateConnection()
     {
-        if (Connection.State != System.Data.ConnectionState.Open)
-            Connection.Open();
-
-        Transaction = Connection.BeginTransaction();
-    }
-
-    public void Commit()
-    {
-        Transaction?.Commit();
-        Transaction = null;
-        Connection.Close();
-    }
-
-    public void Rollback()
-    {
-        Transaction?.Rollback();
-        Transaction = null;
-        Connection.Close();
+        return new SqlConnection(_connectionString);
     }
 
     public List<T> ExecuteQuery<T>(string query, object? param = null)
     {
-        var result = Connection.Query<T>(query, param, Transaction);
-        return result.ToList();
+        using var connection = CreateConnection();
+        connection.Open();
+        return connection.Query<T>(query, param).ToList();
     }
 
     public T? ExecuteSingleQuery<T>(string query, object? param = null)
     {
-        var result = Connection.Query<T>(query, param, Transaction);
-        return result.FirstOrDefault();
+        using var connection = CreateConnection();
+        connection.Open();
+        return connection.Query<T>(query, param).FirstOrDefault();
     }
 
     public void ExecuteNonQuery(string query, object? param = null)
     {
-        Connection.Execute(query, param, Transaction);
+        using var connection = CreateConnection();
+        connection.Open();
+        connection.Execute(query, param);
     }
 }

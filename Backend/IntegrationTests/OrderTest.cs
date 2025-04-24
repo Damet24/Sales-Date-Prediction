@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Domain.Order;
 using FluentAssertions;
+using Infrastructure.Customers.Response;
 using Infrastructure.Order.Request;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
@@ -27,9 +28,10 @@ public class OrderTest : IClassFixture<WebApplicationFactory<Program>>
     {
         var response = await _client.GetAsync("Orders/1");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var orders = await response.Content.ReadFromJsonAsync<List<Order>>();
-        orders.Should().NotBeEmpty();
-        Assert.All(orders, order =>
+        var orders = await response.Content.ReadFromJsonAsync<CustomerOrdersResponse>();
+        orders.Should().NotBeNull();
+        orders.Orders.Should().NotBeEmpty();
+        Assert.All(orders.Orders, order =>
         {
             order.Id.Should().BeGreaterThan(0);
             order.ShipperCity.Should().NotBeEmpty();
@@ -71,7 +73,7 @@ public class OrderTest : IClassFixture<WebApplicationFactory<Program>>
 
         var getOrdersBeforeResponse = await _client.GetAsync($"/Orders/{customerId}");
         getOrdersBeforeResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var ordersBefore = await getOrdersBeforeResponse.Content.ReadFromJsonAsync<List<Order>>();
+        var ordersBefore = await getOrdersBeforeResponse.Content.ReadFromJsonAsync<CustomerOrdersResponse>();
 
         var createOrderResponse = await _client.PostAsJsonAsync("Orders", newOrderRequest);
 
@@ -79,11 +81,11 @@ public class OrderTest : IClassFixture<WebApplicationFactory<Program>>
 
         var getOrdersAfterResponse = await _client.GetAsync($"/Orders/{customerId}");
         getOrdersAfterResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var ordersAfter = await getOrdersAfterResponse.Content.ReadFromJsonAsync<List<Order>>();
+        var ordersAfter = await getOrdersAfterResponse.Content.ReadFromJsonAsync<CustomerOrdersResponse>();
 
         ordersBefore.Should().NotBeNull();
         ordersAfter.Should().NotBeNull();
-        ordersAfter.Count.Should().Be(ordersBefore.Count + 1);
+        ordersAfter.Orders.Count.Should().Be(ordersBefore.Orders.Count + 1);
     }
 
     [Fact]

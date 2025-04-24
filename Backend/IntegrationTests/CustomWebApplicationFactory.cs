@@ -41,23 +41,26 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
             config.AddInMemoryCollection(inMemorySettings!);
         }).ConfigureServices((services) =>
         {
-            var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-            var database = configuration.GetSection("Database");
-            var connectionBuilder = new SqlConnectionStringBuilder
+
+            services.AddSingleton<SqlServerClient>(provider =>
             {
+                var configuration = provider.GetRequiredService<IConfiguration>();
+                var database = configuration.GetSection("Database");
                 /*
                  * En este caso se está usando la misma base de datos para los tests y el desarrollo de la aplicación.
                  * Sin embargo, en un escenario real se deberían utilizar bases de datos independientes en diferentes
-                 * contenedores de Docker o en entornos separados, como una base local o en la nube.
+                 * contenedores de Docker o en entornos separados, como una base local o en un servidor.
                  */
-                DataSource = database.GetValue<string>("DataSource"),
-                UserID = database.GetValue<string>("UserID"),
-                Password = database.GetValue<string>("Password"),
-                IntegratedSecurity = database.GetValue<bool>("IntegratedSecurity"),
-                Encrypt = database.GetValue<bool>("Encrypt")
-            };
-            var connection = new SqlConnection(connectionBuilder.ConnectionString);
-            services.AddSingleton(new SqlServerClient(connection));
+                var connectionBuilder = new SqlConnectionStringBuilder
+                {
+                    DataSource = database.GetValue<string>("DataSource"),
+                    UserID = database.GetValue<string>("UserID"),
+                    Password = database.GetValue<string>("Password"),
+                    IntegratedSecurity = database.GetValue<bool>("IntegratedSecurity"),
+                    Encrypt = database.GetValue<bool>("Encrypt")
+                };
+                return new SqlServerClient(connectionBuilder.ConnectionString);
+            });
 
             services.AddSingleton<ICustomerRepository, SqlServerCustomerRepository>();
             services.AddSingleton<IEmployeeRepository, SqlServerEmployeeRepository>();
