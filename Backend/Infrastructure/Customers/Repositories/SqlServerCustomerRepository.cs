@@ -41,6 +41,7 @@ public class SqlServerCustomerRepository : ICustomerRepository
                 GROUP BY custid 
             )
             SELECT
+                c.custid as Id,
                 c.contactname as CustomerName,
                 lo.last_date as LastOrderDate,
                 DATEADD(DAY, p.average_day, lo.last_date) as NextPredictedOrder
