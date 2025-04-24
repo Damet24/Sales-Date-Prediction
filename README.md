@@ -10,7 +10,7 @@ Este proyecto utiliza **.NET 9** y **SQL Server** como base de datos.
 Puedes usar SQL Server localmente o en un contenedor Docker.
 
 ## Estructura del Backend
-
+```
 Backend/
 ├── Api/
 │   ├── Controllers/
@@ -85,7 +85,7 @@ Backend/
 │   ├── [OrderTest.cs](Backend/IntegrationTests/OrderTest.cs)
 │   ├── [ProductTest.cs](Backend/IntegrationTests/ProductTest.cs)
 │   └── [ShipperTest.cs](Backend/IntegrationTests/ShipperTest.cs)
-
+```
 ## Configuración
 
 ### Archivo de configuración
