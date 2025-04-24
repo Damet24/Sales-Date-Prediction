@@ -11,81 +11,17 @@ Puedes usar SQL Server localmente o en un contenedor Docker.
 
 ## Estructura del Backend
 ```
-Backend/
-├── Api/
-│   ├── Controllers/
-│   │   ├── [CustomersController.cs](Backend/Api/Controllers/CustomersController.cs)
-│   │   ├── [EmployeesController.cs](Backend/Api/Controllers/EmployeesController.cs)
-│   │   ├── [OrdersController.cs](Backend/Api/Controllers/OrdersController.cs)
-│   │   ├── [ProductsController.cs](Backend/Api/Controllers/ProductsController.cs)
-│   │   └── [ShippersController.cs](Backend/Api/Controllers/ShippersController.cs)
-│   ├── Dependencies/
-│   │   └── [DependencyInjectionExtensions.cs](Backend/Api/Dependencies/DependencyInjectionExtensions.cs)
-│   ├── Extensions/ *(extensiones necesarias para inyección de dependencias)*
-│   ├── Filters/ *(filtros globales de la aplicación)*
-│   ├── [Program.cs](Backend/Api/Program.cs)
-│   └── [ApiBehaviorExtensions.cs](Backend/Api/ApiBehaviorExtensions.cs)
-│
-├── Application/
-│   ├── Customer/
-│   │   └── [CustomerFinder.cs](Backend/Application/Customer/CustomerFinder.cs)
-│   ├── Employee/
-│   │   └── [EmployeeFinder.cs](Backend/Application/Employee/EmployeeFinder.cs)
-│   ├── Orders/
-│   │   ├── [OrderCreator.cs](Backend/Application/Orders/OrderCreator.cs)
-│   │   ├── [OrderFinder.cs](Backend/Application/Orders/OrderFinder.cs)
-│   │   └── [OrderOfCustomerFinder.cs](Backend/Application/Orders/OrderOfCustomerFinder.cs)
-│   ├── Product/
-│   │   └── [ProductFinder.cs](Backend/Application/Product/ProductFinder.cs)
-│   └── Shipper/
-│       └── [ShipperFinder.cs](Backend/Application/Shipper/ShipperFinder.cs)
-│
-├── Domain/
-│   ├── Constants/
-│   │   └── [OrderConstants.cs](Backend/Domain/Constants/OrderConstants.cs)
-│   ├── Customer/
-│   │   ├── [Customer.cs](Backend/Domain/Customer/Customer.cs)
-│   │   ├── [CustomerWithOrderDate.cs](Backend/Domain/Customer/CustomerWithOrderDate.cs)
-│   │   └── [ICustomerRepository.cs](Backend/Domain/Customer/Repositories/ICustomerRepository.cs)
-│   ├── Employee/
-│   │   ├── [Employee.cs](Backend/Domain/Employee/Employee.cs)
-│   │   └── [IEmployeeRepository.cs](Backend/Domain/Employee/Repositories/IEmployeeRepository.cs)
-│   ├── Order/
-│   │   ├── [Order.cs](Backend/Domain/Order/Order.cs)
-│   │   ├── [OrderDetail.cs](Backend/Domain/Order/OrderDetail.cs)
-│   │   ├── [OrderWithDetails.cs](Backend/Domain/Order/OrderWithDetails.cs)
-│   │   └── [IOrderRepository.cs](Backend/Domain/Order/Repositories/IOrderRepository.cs)
-│   ├── Product/
-│   │   ├── [Product.cs](Backend/Domain/Product/Product.cs)
-│   │   └── [IProductRepository.cs](Backend/Domain/Product/Repositories/IProductRepository.cs)
-│   └── Shipper/
-│       ├── [Shipper.cs](Backend/Domain/Shipper/Shipper.cs)
-│       └── [IShipperRepository.cs](Backend/Domain/Shipper/Repositories/IShipperRepository.cs)
-│
-├── Infrastructure/
-│   ├── [DatabaseErrors.cs](Backend/Infrastructure/DatabaseErrors.cs)
-│   ├── Shipper/
-│   │   └── [SqlServerShipperRepository.cs](Backend/Infrastructure/Shipper/Repositories/SqlServerShipperRepository.cs)
-│   ├── Products/
-│   │   └── [SqlServerProductRepository.cs](Backend/Infrastructure/Products/SqlServerProductRepository.cs)
-│   ├── Order/
-│   │   ├── [CreateOrderRequest.cs](Backend/Infrastructure/Order/Request/CreateOrderRequest.cs)
-│   │   └── [OrderDetailRequest.cs](Backend/Infrastructure/Order/Request/OrderDetailRequest.cs)
-│   ├── Employee/
-│   │   └── [SqlServerEmployeeRepository.cs](Backend/Infrastructure/Employee/Repositories/SqlServerEmployeeRepository.cs)
-│   ├── Customers/
-│   │   ├── [CustomerOrdersResponse.cs](Backend/Infrastructure/Customers/Response/CustomerOrdersResponse.cs)
-│   │   └── [SqlServerCustomerRepository.cs](Backend/Infrastructure/Customers/Repositories/SqlServerCustomerRepository.cs)
-│   └── [SqlServerClient.cs](Backend/Infrastructure/Clients/SqlServerClient.cs)
-│
-├── IntegrationTests/
-│   ├── [CustomerTest.cs](Backend/IntegrationTests/CustomerTest.cs)
-│   ├── [CustomWebApplicationFactory.cs](Backend/IntegrationTests/CustomWebApplicationFactory.cs)
-│   ├── [EmployeeTest.cs](Backend/IntegrationTests/EmployeeTest.cs)
-│   ├── [OrderTest.cs](Backend/IntegrationTests/OrderTest.cs)
-│   ├── [ProductTest.cs](Backend/IntegrationTests/ProductTest.cs)
-│   └── [ShipperTest.cs](Backend/IntegrationTests/ShipperTest.cs)
-```
+- `Backend/`
+  - `Api/`
+    - `Controllers/`
+      - [`CustomersController.cs`](Backend/Api/Controllers/CustomersController.cs)
+      - [`OrdersController.cs`](Backend/Api/Controllers/OrdersController.cs)
+    - [`Program.cs`](Backend/Api/Program.cs)
+  - `Application/`
+    - `Orders/`
+      - [`OrderCreator.cs`](Backend/Application/Orders/OrderCreator.cs)
+  - `Infrastructure/`
+    - [`SqlServerClient.cs`](Backend/Infrastructure/Clients/SqlServerClient.cs)
 ## Configuración
 
 ### Archivo de configuración
