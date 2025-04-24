@@ -1,28 +1,23 @@
-using Application.Customer;
-using Application.Employee;
-using Application.Orders;
-using Application.Product;
-using Application.Shipper;
 using Backend;
 using Backend.Dependencies;
-using Domain;
-using Domain.Customer.Repositories;
-using Domain.Employee.Repositories;
-using Domain.Order.Repositories;
-using Domain.Product.Repositories;
-using Domain.Shipper.Repositories;
-using Infrastructure;
-using Infrastructure.Clients;
-using Infrastructure.Customers.Repositories;
-using Infrastructure.Employee.Repositories;
-using Infrastructure.Order.Repositories;
-using Infrastructure.Products;
-using Infrastructure.Shipper.Repositories;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+/*
+ * Aquí estoy configurando de esta manera por practicidad, sin embargo, es mejor tener la configuración
+ * de las direcciones de forma externa a la aplicación, cargándolas ya sea desde variables de entorno
+ * o desde un servicio de secretos.
+ */
+const string myAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: myAllowSpecificOrigins,
+        policy  =>
+        {
+            policy.WithOrigins("http://localhost:4200");
+        });
+});
 
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
@@ -43,6 +38,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors(myAllowSpecificOrigins);
 app.MapControllers();
 app.Run();
 
