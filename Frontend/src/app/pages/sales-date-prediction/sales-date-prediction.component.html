@@ -8,7 +8,6 @@
     dataKey="id"
     [loading]="ordersService.loading()"
     [value]="ordersService.orders()" 
-    [tableStyle]="{ 'min-width': '50rem' }"
     [paginator]="true"
     [rows]="10"
     [rowsPerPageOptions]="[10, 15, 20]"
@@ -49,8 +48,9 @@
            <td>{{ orders.customerName }}</td>
            <td>{{ orders.lastOrderDate | date:'MM/dd/yyyy' }}</td>
            <td>{{ orders.nextPredictedOrder | date:'MM/dd/yyyy' }}</td>
-           <td><p-button label="VIEW ORDERS" variant="text" severity="danger" /></td>
-           <td><p-button label="NEW ORDERS" variant="text" severity="success" /></td>
+           <td><p-button label="VIEW ORDERS" variant="text" severity="danger" (onClick)="viewOrder(orders.id)" /></td>
+           <td><p-button label="NEW ORDERS" variant="text" severity="success" (onClick)="newOrder(orders.id)" /></td>
         </tr>
     </ng-template>
 </p-table>
+<router-outlet name="modal"></router-outlet>

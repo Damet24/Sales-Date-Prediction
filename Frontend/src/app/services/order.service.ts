@@ -1,34 +1,40 @@
-import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { CustomerWithOrderDate } from '../interfaces/request-response';
+import { CustomerOrders, Order } from '../interfaces/request-response';
+import { HttpClient } from '@angular/common/http';
 
 interface State {
-  orders: CustomerWithOrderDate[]
+  orders: Order[],
+  customerName: string
   loading: boolean
 }
 
 @Injectable({
   providedIn: 'root'
 })
-export class OrderActivityService {
+export class OrderService {
 
   private http = inject(HttpClient)
 
   #state = signal<State>({
     loading: true,
-    orders: []
+    orders: [],
+    customerName: ''
   })
 
   orders = computed(() => this.#state().orders)
   loading = computed(() => this.#state().loading)
+  customerName = computed(() => this.#state().customerName)
 
-  constructor() {
-    this.http.get<CustomerWithOrderDate[]>("http://localhost:5106/Customers/order-activity")
+  loadOrders(customerId: string) {
+    this.#state.set({ loading: true, orders: [], customerName: '' });
+
+    this.http.get<CustomerOrders>(`http://localhost:5106/Orders/${customerId}`)
       .subscribe(res => {
         this.#state.set({
           loading: false,
-          orders: res
-        })
-      })
+          orders: res.orders,
+          customerName: res.customerName
+        });
+      });
   }
 }

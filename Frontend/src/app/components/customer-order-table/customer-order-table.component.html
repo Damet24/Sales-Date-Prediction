@@ -1,0 +1,58 @@
+
+<p-table 
+#dt
+dataKey="id"
+[loading]="ordersService.loading()"
+[value]="ordersService.orders()" 
+[paginator]="true"
+[rows]="10"
+[rowsPerPageOptions]="[10, 15, 20]"
+[globalFilterFields]="['id', 'requiredDate', 'shippedDate', 'shipperName', 'shipperAddress', 'shipperCity']"
+>
+<ng-template #caption>
+<div class="flex">
+    <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon>
+            <i class="pi pi-search"></i>
+        </p-inputicon>
+        <input
+        pInputText
+        type="text"
+        placeholder="Search keyword"
+        (input)="applyFilterGlobal($event, 'contains')"
+        />
+    </p-iconfield>
+</div>
+</ng-template>
+<ng-template #header>
+    <tr>
+        <th pSortableColumn="id">
+            Order Id <p-sortIcon field="id" />
+        </th>
+        <th pSortableColumn="requiredDate">
+            Required Date <p-sortIcon field="requiredDate" />
+        </th>
+        <th pSortableColumn="shippedDate">
+            Ship Date <p-sortIcon field="shippedDate" />
+        </th>
+        <th pSortableColumn="shipperName">
+            Ship Name <p-sortIcon field="shipperName" />
+        </th>
+        <th pSortableColumn="shipperAddress">
+            Ship Address <p-sortIcon field="shipperAddress" />
+        </th>
+        <th pSortableColumn="shipperCity">
+            Ship City <p-sortIcon field="shipperCity" />
+        </th>
+    </tr>
+</ng-template>
+<ng-template #body let-orders>
+    <tr>
+       <td>{{ orders.id }}</td>
+       <td>{{ orders.requiredDate | date:'MM/dd/yyyy' }}</td>
+       <td>{{ orders.shippedDate | date:'MM/dd/yyyy' }}</td>
+       <td>{{ orders.shipperName }}</td>
+       <td>{{ orders.shipperAddress }}</td>
+       <td>{{ orders.shipperCity }}</td>
+    </tr>
+</ng-template>

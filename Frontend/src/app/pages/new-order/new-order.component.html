@@ -1,1 +1,63 @@
-<p>new-order works!</p>
+<p-dialog [(visible)]="visible" [modal]="true" [closable]="true" [dismissableMask]="true" [style]="{ width: '80vw', height: '75vh' }"
+  header="New Order" (onHide)="closeModal()">
+  
+  <form [formGroup]="orderForm" (ngSubmit)="submit()" novalidate>
+    <section class="grid w-full">
+      <p-message *ngIf="formErrorMessage" severity="error" [text]="formErrorMessage"></p-message>
+
+      <div class="col grid w-full">
+        <p-select formControlName="employeeId" [options]="employees()" optionLabel="fullName" optionValue="id" placeholder="Select a City"
+          class="w-full input col" />
+        <p-select formControlName="shipperId" [options]="shippers()" optionLabel="companyName" optionValue="id" placeholder="Select a City"
+          class="w-full input col" />
+      </div>
+      
+      <input class="input" formControlName="shipName" pInputText placeholder="Ship Name*">
+      <p-message *ngIf="orderForm.get('shipName')?.invalid && orderForm.get('shipName')?.touched" 
+                 severity="error" text="Ship Name is required."></p-message>
+      
+      <input formControlName="shipAddress" pInputText placeholder="Ship Address*" class="input">
+      <p-message *ngIf="orderForm.get('shipAddress')?.invalid && orderForm.get('shipAddress')?.touched" 
+                 severity="error" text="Ship Address is required."></p-message>
+
+      <input formControlName="shipCity" pInputText placeholder="Ship City*" class="input">
+      <p-message *ngIf="orderForm.get('shipCity')?.invalid && orderForm.get('shipCity')?.touched" 
+                 severity="error" text="Ship City is required."></p-message>
+
+      <input formControlName="shipCountry" pInputText placeholder="Ship Country*" class="input">
+      <p-message *ngIf="orderForm.get('shipCountry')?.invalid && orderForm.get('shipCountry')?.touched" 
+                 severity="error" text="Ship Country is required."></p-message>
+
+      <div>
+        <p-datepicker formControlName="orderDate" placeholder="Order Date*" class="input"/>
+        <p-datepicker formControlName="requiredDate" placeholder="Required Date*" class="input"/>
+        <p-datepicker formControlName="shippedDate" placeholder="Shipped Date*" class="input"/>
+      </div>
+
+      <p-inputnumber formControlName="freight" placeholder="Freight*" class="input"/>
+    </section>
+    
+    <p-divider />
+    
+    <section formGroupName="orderDetails">
+      <h2>Order Detail</h2>
+      
+      <p-select formControlName="productId" [options]="products()" optionLabel="productName" optionValue="id" placeholder="Select Product"
+        class="w-full input" />
+      <p-message *ngIf="orderForm.get('orderDetails')?.get('productId')?.invalid && orderForm.get('orderDetails')?.get('productId')?.touched" 
+                 severity="error" text="Product is required."></p-message>
+
+      <p-inputnumber formControlName="unitPrice" placeholder="$ Unit Price*" class="input"/>
+      <p-message *ngIf="orderForm.get('orderDetails')?.get('unitPrice')?.invalid && orderForm.get('orderDetails')?.get('unitPrice')?.touched" 
+                 severity="error" text="Unit Price is required."></p-message>
+
+      <p-inputnumber formControlName="quantity" placeholder="Quantity*" class="input"/>
+      <p-message *ngIf="orderForm.get('orderDetails')?.get('quantity')?.invalid && orderForm.get('orderDetails')?.get('quantity')?.touched" 
+                 severity="error" text="Quantity is required."></p-message>
+
+      <p-inputnumber formControlName="discount" placeholder="Discount*" class="input"/>
+    </section>
+    
+    <p-button class="input" label="Save" severity="success" type="submit" [disabled]="orderForm.invalid" />
+  </form>
+</p-dialog>

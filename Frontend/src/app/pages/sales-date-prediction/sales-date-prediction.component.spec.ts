@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SalesDatePredictionComponent } from './sales-date-prediction.component';
+import  {SalesDatePredictionComponent} from './sales-date-prediction.component';
 
 describe('SalesDatePredictionComponent', () => {
   let component: SalesDatePredictionComponent;
