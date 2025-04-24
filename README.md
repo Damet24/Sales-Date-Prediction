@@ -11,7 +11,6 @@ Puedes usar SQL Server localmente o en un contenedor Docker.
 
 ## Estructura del Backend
 
-```
 Backend/
 ├── Api/
 │   ├── Controllers/
@@ -86,7 +85,6 @@ Backend/
 │   ├── [OrderTest.cs](Backend/IntegrationTests/OrderTest.cs)
 │   ├── [ProductTest.cs](Backend/IntegrationTests/ProductTest.cs)
 │   └── [ShipperTest.cs](Backend/IntegrationTests/ShipperTest.cs)
-```
 
 ## Configuración
 
@@ -211,9 +209,3 @@ npm test
 ```
 
 Ejecuta las pruebas unitarias con Karma y Jasmine.
-
-## Observaciones
-
-- El frontend está completamente desacoplado del backend y se comunica vía HTTP.
-- Puedes modificar la configuración base (puerto, API base URL, etc.) en los archivos de entorno:  
-  `src/environments/environment.ts` y `environment.prod.ts`.
