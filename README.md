@@ -83,7 +83,7 @@ dotnet test
 
 # Frontend
 
-Este proyecto está construido con **Angular 16+** y utiliza **PrimeNG** para la interfaz de usuario.
+Este proyecto está construido con **Angular 19** y utiliza **PrimeNG** para la interfaz de usuario.
 
 ## Requisitos
 
